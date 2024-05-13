@@ -1,20 +1,58 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, Environment, Html } from "@react-three/drei";
+import * as THREE from "three";
+import {
+  useGLTF,
+  Environment,
+  Html,
+  Text,
+  OrbitControls,
+  ScrollControls,
+  Scroll,
+} from "@react-three/drei";
 import { easing } from "maath";
+import { useSnapshot } from "valtio";
+import { state } from "../state";
 
 function Model(props) {
   const { nodes, materials } = useGLTF("/src/assets/shirt_baked_collapsed.glb");
 
+  const snap = useSnapshot(state);
+
+  const texture = useRef();
+
+  // Load the image texture
+  const textureLoader = new THREE.TextureLoader();
+  textureLoader.load(snap.uploadedImageUrl, (loadedTexture) => {
+    if (materials.lambert1) {
+      materials.lambert1.map = loadedTexture;
+      loadedTexture.wrapS = loadedTexture.wrapT = THREE.RepeatWrapping;
+      loadedTexture.repeat.set(0.1, 0.1);
+      loadedTexture.offset.set(0.5, 0.5);
+      materials.lambert1.needsUpdate = true;
+    }
+  });
+
+  useFrame((state, delta) => {
+    if (materials.lambert1) {
+      easing.dampC(materials.lambert1.color, snap.backgroundColor, 0.05, delta);
+    } else {
+      console.log("Materials or Lambert material not defined.");
+    }
+  });
+
   return (
     <group {...props} dispose={null}>
       <mesh
-        castShadow // Enable casting shadows
-        receiveShadow // Enable receiving shadows
+        castShadow
+        receiveShadow
         geometry={nodes.T_Shirt_male.geometry}
         material={materials.lambert1}
+        material-roughness={0.5}
+        {...props}
+        dispose={null}
       />
     </group>
   );
@@ -23,20 +61,20 @@ function Model(props) {
 function Backdrop() {
   const meshRef = useRef();
 
-  useFrame(() => {
-    meshRef.current.rotation.z += 0.005;
+  useFrame((state) => {
+    const mesh = meshRef.current;
+    if (mesh && mesh.material) {
+      mesh.material.color.set(state.selectColor);
+    }
   });
 
-  // Convert Tailwind CSS color name to RGB
   const tailwindColorToRGB = (colorName) => {
     const colors = {
-      "bg-blue-500": [59, 130, 246], // Example conversion for bg-blue-500
-      // Add more color conversions as needed
+      "bg-blue-500": [59, 130, 246],
     };
-    return colors[colorName] || [255, 255, 255]; // Default to white if color is not found
+    return colors[colorName] || [255, 255, 255];
   };
 
-  // Get RGB values for the Tailwind CSS color
   const tailwindColorRGB = tailwindColorToRGB("bg-blue-500");
   const [r, g, b] = tailwindColorRGB;
 
@@ -47,13 +85,12 @@ function Backdrop() {
       position={[0, 0, -3]}
       receiveShadow
     >
-      {/* Enable receiving shadows */}
       <planeGeometry args={[20, 20]} />
       <meshStandardMaterial
         color={`rgb(${r}, ${g}, ${b})`}
         transparent
         opacity={0}
-        receiveShadow // Enable receiving shadows
+        receiveShadow
       />
     </mesh>
   );
@@ -80,18 +117,33 @@ function CameraRig({ children }) {
 }
 
 function CanvasComponent() {
+  const snap = useSnapshot(state);
   return (
     <div style={{ width: "100%", height: "100vh" }}>
       <Canvas
         className="cursor-pointer"
         camera={{ position: [0, 0, 2.5], fov: 25 }}
         style={{ background: "#f0f0f0" }}
-        shadows // Enable global shadows
+        shadows
       >
         <ambientLight intensity={0.5} />
         <Environment preset="city" />
-        <pointLight position={[10, 10, 10]} castShadow />{" "}
-        {/* Enable casting shadows */}
+        <pointLight position={[10, 10, 10]} castShadow />
+
+        {/* 3D Text */}
+        <Text
+          position={[0, 0, 1]}
+          rotation={[0, 0, 0]}
+          color="black"
+          scale={0.02}
+          fontSize={0.5} // Adjust the font size as needed
+          maxWidth={2}
+          lineHeight={1}
+          letterSpacing={0.02}
+        >
+          {snap.textDefault}
+        </Text>
+
         <CameraRig>
           <Suspense fallback={<Html>Loading...</Html>}>
             <Model />

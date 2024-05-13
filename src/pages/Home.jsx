@@ -1,5 +1,7 @@
 import Carousel from "../components/Carousel";
 import Nav from "../components/Nav";
+import Slider from "../components/Slider";
+import VidePlayer from "../components/VideoPlayer";
 
 function Home() {
   function generateLoremPicsumImageLinks() {
@@ -17,6 +19,8 @@ function Home() {
     <div>
       <Nav />
       <Carousel images={imageLinks} />
+      <Slider />
+      <VidePlayer />
     </div>
   );
 }

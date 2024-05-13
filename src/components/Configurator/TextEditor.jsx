@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import Heading from "../Heading";
+import { state, setTextState } from "../../state";
 
 const TextEditor = ({ initialText, onSave, onDiscard }) => {
   const [text, setText] = useState(initialText);
-  const [originalText, setOriginalText] = useState(initialText);
 
   const handleTextChange = (e) => {
     setText(e.target.value);
+    setTextState(e.target.value);
   };
 
   const handleDiscard = () => {
-    setText(originalText);
+    setText(initialText);
     onDiscard(); // Call onDiscard prop
   };
 
-  const handleSave = () => {
+  const handleSave = (e) => {
     onSave(text); // Call onSave prop with updated text
-    setOriginalText(text);
+    setText(text); // Update valtio state
   };
 
   return (

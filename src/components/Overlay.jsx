@@ -1,4 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
+import { useSnapshot } from "valtio";
+import {
+  state,
+  setBackgroundColor,
+  setTextState,
+  setUploadedImageUrl,
+} from "../state";
 import CanvasComponent from "./CanvasComponent";
 import ColorPicker from "../components/Configurator/ColorPicker";
 import ImageUpload from "../components/Configurator/ImageUpload";
@@ -7,37 +14,58 @@ import Heading from "../components/Heading";
 import { FaPalette, FaImage, FaFont } from "react-icons/fa";
 
 function Overlay() {
-  const [color, setColor] = useState("#ff0000");
-  const [text, setText] = useState("Hello, World!");
-  const [imageURL, setImageURL] = useState("");
-  const [activeOption, setActiveOption] = useState(""); // State to track active option
-  const buttonStyle =
-    "border-2 font-bold py-2 px-4 rounded hover:bg-slate-500 hover:text-white rounded-lg";
+  const snap = useSnapshot(state);
 
-  // Function to handle option click
   const handleOptionClick = (option) => {
-    setActiveOption(option);
+    state.activeOption = option;
   };
 
-  // Function to handle image upload
-  const handleImageUpload = (file) => {
-    // Your implementation for image upload
+  const handleImageUpload = (imageUrl) => {
+    setUploadedImageUrl(imageUrl);
   };
 
-  // Function to handle text change
   const handleTextChange = (newText) => {
-    setText(newText);
+    setTextState(newText); // Update text in valtio state (state.text
   };
 
-  // Render the active component based on selected option
+  const handleColorChange = (color) => {
+    setBackgroundColor(color);
+  };
+
+  const handleDiscard = () => {
+    // Handle discard action
+  };
+
+  const handleSave = (color) => {
+    // Handle save action
+  };
+
   const renderActiveComponent = () => {
-    switch (activeOption) {
+    switch (snap.activeOption) {
       case "color":
-        return <ColorPicker color={color} setColor={setColor} />;
+        return (
+          <ColorPicker
+            color={snap.backgroundColor}
+            setColor={handleColorChange}
+            onDiscard={handleDiscard}
+            onSave={handleSave}
+            discardDisabled={false} // Enable discard button
+            saveDisabled={false} // Enable save button
+          />
+        );
       case "image":
-        return <ImageUpload handleImageUpload={handleImageUpload} />;
+        return (
+          <ImageUpload onSave={handleImageUpload} onDiscard={handleDiscard} />
+        );
       case "text":
-        return <TextEditor text={text} setText={handleTextChange} />;
+        return (
+          <TextEditor
+            initialText={""}
+            setTextState={handleTextChange} // Pass the function to update text
+            onSave={handleSave}
+            onDiscard={handleDiscard}
+          />
+        );
       default:
         return null;
     }
@@ -45,15 +73,17 @@ function Overlay() {
 
   return (
     <div className="grid grid-cols-3 px-20">
-      {/* Render Canvas component with props */}
       <div className="col-span-2">
-        <CanvasComponent color={color} text={text} imageURL={imageURL} />
+        <CanvasComponent
+          color={snap.backgroundColor}
+          text={snap.text}
+          imageURL={snap.uploadedImageUrl}
+        />
       </div>
 
-      {/* Render active component or options */}
       <div className="col-span-1 flex justify-center items-center bg-[#f0f0f0]">
         <div className="flex flex-col justify-center items-center h-full">
-          {activeOption ? (
+          {snap.activeOption ? (
             <div className="border-2 px-6 py-4 sm:px-10 sm:py-5 rounded-lg bg-white shadow-xl">
               {renderActiveComponent()}
             </div>
@@ -64,21 +94,21 @@ function Overlay() {
               <div className="grid gap-3 mt-4 sm:mt-6">
                 <button
                   onClick={() => handleOptionClick("color")}
-                  className={`${buttonStyle} flex items-center`}
+                  className="border-2 font-bold py-2 px-4 hover:bg-slate-500 hover:text-white rounded-lg flex items-center"
                 >
                   <FaPalette className="mr-2" />
                   Choose Color
                 </button>
                 <button
                   onClick={() => handleOptionClick("image")}
-                  className={`${buttonStyle} flex items-center`}
+                  className="border-2 font-bold py-2 px-4 hover:bg-slate-500 hover:text-white rounded-lg flex items-center"
                 >
                   <FaImage className="mr-2" />
                   Upload Image
                 </button>
                 <button
                   onClick={() => handleOptionClick("text")}
-                  className={`${buttonStyle} flex items-center`}
+                  className="border-2 font-bold py-2 px-4 hover:bg-slate-500 hover:text-white rounded-lg flex items-center"
                 >
                   <FaFont className="mr-2" />
                   Add Text
