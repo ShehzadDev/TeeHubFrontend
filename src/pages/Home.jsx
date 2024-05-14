@@ -1,6 +1,7 @@
 import Carousel from "../components/Carousel";
 import Nav from "../components/Nav";
 import Slider from "../components/Slider";
+import Testimonials from "../components/Testimonials";
 import VidePlayer from "../components/VideoPlayer";
 
 function Home() {
@@ -19,8 +20,9 @@ function Home() {
     <div>
       <Nav />
       <Carousel images={imageLinks} />
-      <Slider />
+      <Slider images={imageLinks} />
       <VidePlayer />
+      <Testimonials />
     </div>
   );
 }
