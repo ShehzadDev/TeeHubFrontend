@@ -3,7 +3,7 @@ import Nav from "../components/Nav";
 import Slider from "../components/Slider";
 import Testimonials from "../components/Testimonials";
 import VidePlayer from "../components/VideoPlayer";
-
+import Footer from "../components/Footer";
 function Home() {
   function generateLoremPicsumImageLinks() {
     const imageLinks = [];
@@ -23,6 +23,7 @@ function Home() {
       <Slider images={imageLinks} />
       <VidePlayer />
       <Testimonials />
+      <Footer />
     </div>
   );
 }
