@@ -6,7 +6,6 @@ import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
 const ImageUpload = ({ onSave, onDiscard }) => {
   const [file, setFile] = useState(null);
-  const [imgUrl, setImgUrl] = useState(null);
   const [progressPercent, setProgressPercent] = useState(0);
   const [error, setError] = useState(null);
 
@@ -32,6 +31,7 @@ const ImageUpload = ({ onSave, onDiscard }) => {
   const handleDiscard = () => {
     setFile(null);
     setError(null);
+    setProgressPercent(0);
     onDiscard();
   };
 
@@ -57,7 +57,6 @@ const ImageUpload = ({ onSave, onDiscard }) => {
       () => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((downloadURL) => {
-            setImgUrl(downloadURL);
             onSave(downloadURL);
           })
           .catch((error) => {
@@ -69,14 +68,13 @@ const ImageUpload = ({ onSave, onDiscard }) => {
   };
 
   return (
-    <div className="container">
-      <div className="flex flex-col items-center space-y-4">
+    <div className="container max-w-md mx-auto p-4">
+      <div className="flex flex-col items-center space-y-4 bg-white p-6 rounded-lg shadow-md">
         <Heading className="text-center" text="Upload Image" />
         {error && <p className="text-red-500">{error}</p>}
         <p className="mb-4">
           Select an image file (.jpg, .jpeg, .png) with a maximum size of 5 MB.
         </p>
-        {/* File input */}
         <form onSubmit={handleSubmit}>
           <label
             htmlFor="file-upload"
@@ -94,20 +92,16 @@ const ImageUpload = ({ onSave, onDiscard }) => {
           {file && (
             <p className="text-sm text-gray-600">Selected file: {file.name}</p>
           )}
-
-          {/* Progress */}
           {progressPercent > 0 && (
             <p className="text-sm text-gray-600">
               Uploading... {progressPercent}%
             </p>
           )}
-
-          {/* Discard and Save buttons */}
-          <div>
+          <div className="flex space-x-2 mt-4">
             <button
               type="button"
               onClick={handleDiscard}
-              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
             >
               Discard
             </button>

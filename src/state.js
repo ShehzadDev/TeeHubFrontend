@@ -6,6 +6,8 @@ export const state = proxy({
   textColor: "#ff00ff", // Default text color
   uploadedImageUrl: null, // URL of the uploaded image
   textDefault: "", // Default text
+  size: "", // Default size
+  quantity: 1, // Default quantity
 });
 
 export function setBackgroundColor(color) {
@@ -18,6 +20,14 @@ export function setTextColor(color) {
 
 export function setUploadedImageUrl(url) {
   state.uploadedImageUrl = url;
+}
+
+export function setSize(size) {
+  state.size = size;
+}
+
+export function setQuantity(quantity) {
+  state.quantity = quantity;
 }
 
 export function useProxy() {

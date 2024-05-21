@@ -29,8 +29,9 @@ function Model(props) {
     if (materials.lambert1) {
       materials.lambert1.map = loadedTexture;
       loadedTexture.wrapS = loadedTexture.wrapT = THREE.RepeatWrapping;
-      loadedTexture.repeat.set(0.1, 0.1);
-      loadedTexture.offset.set(0.5, 0.5);
+      loadedTexture.repeat.set(1, 1);
+      loadedTexture.offset.set(0, 0);
+      loadedTexture.needsUpdate = true;
       materials.lambert1.needsUpdate = true;
     }
   });
@@ -134,10 +135,10 @@ function CanvasComponent() {
         <Text
           position={[0, 0, 1]}
           rotation={[0, 0, 0]}
-          color="black"
+          color="red"
           scale={0.02}
           fontSize={0.5} // Adjust the font size as needed
-          maxWidth={2}
+          maxWidth={5}
           lineHeight={1}
           letterSpacing={0.02}
         >

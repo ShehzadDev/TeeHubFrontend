@@ -21,8 +21,8 @@ const TextEditor = ({ initialText, onSave, onDiscard }) => {
   };
 
   return (
-    <div className="container">
-      <div className="flex flex-col items-center space-y-4">
+    <div className="container max-w-md mx-auto p-4">
+      <div className="flex flex-col items-center space-y-4 bg-white p-6 rounded-lg shadow-md">
         <Heading className="text-center" text="Text Editor" />
         <textarea
           value={text}
@@ -31,10 +31,10 @@ const TextEditor = ({ initialText, onSave, onDiscard }) => {
           rows="4"
           placeholder="Enter your text here..."
         />
-        <div>
+        <div className="flex space-x-2">
           <button
             onClick={handleDiscard}
-            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
           >
             Discard
           </button>
